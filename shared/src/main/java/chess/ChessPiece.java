@@ -60,6 +60,14 @@ public class ChessPiece {
         return row >=1 && row <=8 && col >=1 && col <=8;
     }
 
+    private boolean canMoveTo(ChessBoard board, int row, int col) {
+        if (!inBounds(row,col)) {
+            return false;
+        }
+        ChessPiece target = board.getPiece(new ChessPosition(row, col));
+        return target == null || target.getTeamColor() != this.pieceColor;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
