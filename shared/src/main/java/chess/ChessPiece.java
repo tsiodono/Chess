@@ -68,7 +68,7 @@ public class ChessPiece {
         return target == null || target.getTeamColor() != this.pieceColor;
     }
 
-    private void simpleMove(ChessBoard board, ChessPosition start,List<ChessMove> moves, int[][] directions) {
+    private void jumpMove(ChessBoard board, ChessPosition start,List<ChessMove> moves, int[][] directions) {
         for (int[] direction : directions) {
             int row = start.getRow() + direction[0];
             int col = start.getColumn() + direction[1];
@@ -102,6 +102,9 @@ public class ChessPiece {
                 col += direction[1];
             }
         }
+    }
+
+    private void pawnMove(ChessBoard board, ChessPosition start, List<ChessMove> moves) {
     }
 
 
