@@ -49,6 +49,10 @@ public class ChessGame {
         throw new RuntimeException("Not implemented");
     }
 
+    private boolean inBounds(int row, int col) {
+        return row >=1 && row <=8 && col >=1 && col <=8;
+    }
+
     /**
      * Makes a move in the chess game
      *
