@@ -2,6 +2,8 @@ package chess;
 
 import java.util.Collection;
 import java.util.Objects;
+import java.util.List;
+
 
 /**
  * Represents a single chess piece
@@ -53,7 +55,31 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        List<ChessMove> moves = new java.util.ArrayList<>();
+
+        switch (pieceType) {
+            case KING -> jumpMove(board, myPosition, moves, 
+            new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1},
+                        {1, 1}, {1, -1}, {-1, 1}, {-1, -1}});
+                        
+            case QUEEN -> lineMove(board, myPosition, moves, 
+            new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1},
+                        {1, 1}, {1, -1}, {-1, 1}, {-1, -1}});
+
+            case BISHOP -> lineMove(board, myPosition, moves, 
+            new int[][]{{1, 1}, {1, -1}, {-1, 1}, {-1, -1}});
+
+            case KNIGHT -> jumpMove(board, myPosition, moves, 
+            new int[][]{{2, 1}, {2, -1}, {-2, 1}, {-2, -1},
+                        {1, 2}, {1, -2}, {-1, 2}, {-1, -2}});
+
+            case ROOK -> lineMove(board,myPosition,moves,
+            new int[][]{{0,-1},{-1,0},{0,+1},{+1,0}});
+
+            case PAWN -> pawnMoves(board,myPosition,moves);
+        }
+
+        return moves;
     }
 
         private boolean inBounds(int row, int col) {
@@ -104,10 +130,49 @@ public class ChessPiece {
         }
     }
 
-    private void pawnMove(ChessBoard board, ChessPosition start, List<ChessMove> moves) {
+    private void pawnMoves(ChessBoard board, ChessPosition start, List<ChessMove> moves) {
+        int direction = pieceColor == ChessGame.TeamColor.WHITE ? 1 : -1;
+        int row = start.getRow();
+        int col = start.getColumn();
+
+        int nextRow = row + direction;
+
+        if (inBounds(nextRow, col) && board.getPiece(new ChessPosition(nextRow, col)) == null) {
+            addPawnMove(start, new ChessPosition(nextRow, col), moves);
+
+            int startRow = pieceColor == ChessGame.TeamColor.WHITE ? 2 : 7;
+            int twoRow = row + 2* direction;
+
+            if (row == startRow && board.getPiece(new ChessPosition(twoRow,col)) == null) {
+                moves.add(new ChessMove(start, new ChessPosition(twoRow, col),null));
+            }
+
+        }
+        for (int diagonal : new int[]{-1, 1}) {
+            int capture = col + diagonal;
+
+            if (!inBounds(nextRow, capture)) {
+                continue;
+            }
+            ChessPiece target = board.getPiece(new ChessPosition(nextRow, capture));
+            if (target != null && target.getTeamColor() != this.pieceColor) {
+                addPawnMove(start, new ChessPosition(nextRow, capture), moves);
+            }
+        }
     }
 
+    private void addPawnMove(ChessPosition start, ChessPosition end, List<ChessMove> moves) {
+        boolean promotion = end.getRow() == 1 || end.getRow() == 8;
 
+        if (promotion) {
+            moves.add(new ChessMove(start, end, ChessPiece.PieceType.QUEEN));
+            moves.add(new ChessMove(start, end, ChessPiece.PieceType.ROOK));
+            moves.add(new ChessMove(start, end, ChessPiece.PieceType.BISHOP));
+            moves.add(new ChessMove(start, end, ChessPiece.PieceType.KNIGHT));
+        } else {
+            moves.add(new ChessMove(start, end, null));
+        }
+    }
 
     @Override
     public boolean equals(Object obj) {
