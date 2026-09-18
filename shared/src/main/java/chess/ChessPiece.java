@@ -68,6 +68,44 @@ public class ChessPiece {
         return target == null || target.getTeamColor() != this.pieceColor;
     }
 
+    private void simpleMove(ChessBoard board, ChessPosition start,List<ChessMove> moves, int[][] directions) {
+        for (int[] direction : directions) {
+            int row = start.getRow() + direction[0];
+            int col = start.getColumn() + direction[1];
+
+            if (canMoveTo(board, row, col)) {
+                moves.add(new ChessMove(
+                        start,
+                        new ChessPosition(row, col),
+                        null
+                ));
+            }
+        }
+    }
+
+    private void lineMove(ChessBoard board, ChessPosition start, List<ChessMove> moves, int[][] directions) {
+        for (int[] direction : directions) {
+            int row = start.getRow() + direction[0];
+            int col = start.getColumn() + direction[1];
+
+            while (inBounds(row,col)) {
+                ChessPiece target = board.getPiece(new ChessPosition(row, col));
+                if (target == null) {
+                    moves.add(new ChessMove(start, new ChessPosition(row, col), null));
+                } else {
+                    if (target.getTeamColor() != this.pieceColor) {
+                        moves.add(new ChessMove(start, new ChessPosition(row, col), null));
+                    }
+                    break;
+                }
+                row += direction[0];
+                col += direction[1];
+            }
+        }
+    }
+
+
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
