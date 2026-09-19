@@ -1,6 +1,8 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * A class that can manage a chess game, making moves on a board
@@ -18,14 +20,6 @@ public class ChessGame {
         board.resetBoard();
         teamTurn = TeamColor.WHITE;
 
-    }
-
-    public void setBoard(ChessBoard board) {
-        this.board = board;
-    }
-
-    public ChessBoard getBoard() {
-        return board;
     }
 
     /**
@@ -60,10 +54,56 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece = board.getPiece(startPosition);
+        if (piece == null) {
+            return null;
+        }
+
+        List<ChessMove> moves = new ArrayList<>();
+
+        for (ChessMove move : piece.pieceMoves(board, startPosition)) {
+            ChessBoard testBoard = copyBoard(board);
+            applyMove(testBoard, move);
+        }
+        return moves;
     }
 
+    /**
+     * Helper methods to copy chessboard, and test moves before actually making them.
+     */
 
+    private ChessBoard copyBoard(ChessBoard original) {
+        ChessBoard copy = new ChessBoard();
+
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition position = new ChessPosition(row, col);
+                copy.addPiece(position, original.getPiece(position));
+            }
+        }
+        return copy;
+    }
+
+    private void applyMove(ChessBoard targetBoard, ChessMove move) {
+        ChessPiece piece = targetBoard.getPiece(move.getStartPosition());
+
+        if (move.getPromotionPiece() != null) {
+            piece = new ChessPiece (piece.getTeamColor(), move.getPromotionPiece());
+        }
+        targetBoard.addPiece(move.getStartPosition(), null);
+        targetBoard.addPiece(move.getEndPosition(), piece);
+    }
+
+    private boolean samePosition(ChessPosition first, ChessPosition second) {
+    return first.getRow() == second.getRow()
+            && first.getColumn() == second.getColumn();
+    }
+
+    private boolean sameMove(ChessMove first, ChessMove second) {
+    return samePosition(first.getStartPosition(), second.getStartPosition())
+            && samePosition(first.getEndPosition(), second.getEndPosition())
+            && first.getPromotionPiece() == second.getPromotionPiece();
+    }
 
     /**
      * Makes a move in the chess game
@@ -112,7 +152,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        this.board = board;
     }
 
     /**
@@ -121,6 +161,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return this.board;
     }
 }
