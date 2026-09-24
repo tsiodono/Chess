@@ -143,7 +143,7 @@ public class ChessPiece {
             int startRow = pieceColor == ChessGame.TeamColor.WHITE ? 2 : 7;
             int twoRow = row + 2* direction;
 
-            if (row == startRow && board.getPiece(new ChessPosition(twoRow,col)) == null) {
+            if (row == startRow && board.getPiece(new ChessPosition(twoRow,col)) == null && board.getPiece(new ChessPosition(nextRow,col)) == null) {
                 moves.add(new ChessMove(start, new ChessPosition(twoRow, col),null));
             }
 
