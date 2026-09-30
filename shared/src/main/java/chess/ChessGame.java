@@ -3,6 +3,7 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A class that can manage a chess game, making moves on a board
@@ -292,5 +293,26 @@ public class ChessGame
     public ChessBoard getBoard() 
     {
         return this.board;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+        {
+            return true;
+        }
+        if (!(obj instanceof ChessGame other))
+        {
+            return false;
+        }
+        return Objects.equals(this.board, other.board)
+                && this.teamTurn == other.teamTurn;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(this.board, this.teamTurn);
     }
 }
