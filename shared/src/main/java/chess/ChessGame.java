@@ -240,7 +240,7 @@ public class ChessGame
         return isInCheck(teamColor) && !legalMoves(teamColor);
     }
 
-    private boolean legalMoves(TeamColor teamColor) 
+    private boolean legalMoves(TeamColor teamColor) throws InvalidMoveException
     {
         for (int row = 1; row <= 8; row++) 
         {
