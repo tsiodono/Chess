@@ -59,7 +59,7 @@ public class ChessGame
      * @return Set of valid moves for requested piece, or null if no piece at
      * startPosition
      */
-    public Collection<ChessMove> validMoves(ChessPosition startPosition) throws InvalidMoveException
+    public Collection<ChessMove> validMoves(ChessPosition startPosition)
     {
         ChessPiece piece = board.getPiece(startPosition);
         if (piece == null) 
@@ -77,11 +77,6 @@ public class ChessGame
             if (!kingInCheck(testBoard, piece.getTeamColor()))
             {
                 moves.add(move);
-            }
-
-            else
-            {
-                throw new InvalidMoveException ("Piece can't move or king will be in check");
             }
         }
         return moves;
@@ -236,12 +231,12 @@ public class ChessGame
      * @param teamColor which team to check for checkmate
      * @return True if the specified team is in checkmate
      */
-    public boolean isInCheckmate(TeamColor teamColor) throws InvalidMoveException
+    public boolean isInCheckmate(TeamColor teamColor)
     {
         return isInCheck(teamColor) && !legalMoves(teamColor);
     }
 
-    private boolean legalMoves(TeamColor teamColor) throws InvalidMoveException
+    private boolean legalMoves(TeamColor teamColor)
     {
         for (int row = 1; row <= 8; row++) 
         {
@@ -270,7 +265,7 @@ public class ChessGame
      * @param teamColor which team to check for stalemate
      * @return True if the specified team is in stalemate, otherwise false
      */
-    public boolean isInStalemate(TeamColor teamColor) throws InvalidMoveException
+    public boolean isInStalemate(TeamColor teamColor)
     {
         return !isInCheck(teamColor) && !legalMoves(teamColor);
     }
