@@ -17,11 +17,28 @@ public class ChessGame
     private ChessBoard board;
     private TeamColor teamTurn;
 
+    private ChessMove lastMove;
+    private boolean whiteKingMoved;
+    private boolean blackKingMoved;
+    private boolean whiteRookAMoved;
+    private boolean whiteRookHMoved;
+    private boolean blackRookAMoved;
+    private boolean blackRookHMoved;
+
+
     public ChessGame() 
     {
         board = new ChessBoard();
         board.resetBoard();
         teamTurn = TeamColor.WHITE;
+
+        lastMove = null;
+        whiteKingMoved = false;
+        blackKingMoved = false;
+        whiteRookAMoved = false;
+        whiteRookHMoved = false;
+        blackRookAMoved = false;
+        blackRookHMoved = false;
 
     }
 
