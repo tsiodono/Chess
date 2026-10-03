@@ -244,6 +244,31 @@ public class ChessGame
 
     }
 
+
+    /**
+     * Helper methods to check if king or rooks have moved, which is useful for determining castling rights.
+     *
+     * @param teamColor which team to check for castling rights
+     * @return True if the king or the specified rook has moved
+     */
+
+    private boolean hasKingMoved(TeamColor teamColor)
+    {
+        return teamColor == TeamColor.WHITE ? whiteKingMoved : blackKingMoved;
+    }
+
+    private boolean rookHasMoved(TeamColor teamColor, int rookColumn)
+    {
+        if (teamColor == TeamColor.WHITE)
+        {
+            return rookColumn == 1 ? whiteRookAMoved : whiteRookHMoved;
+        }
+        return rookColumn == 1 ? blackRookAMoved : blackRookHMoved;
+    }
+
+
+    
+
     /**
      * Determines if the given team is in checkmate
      *
