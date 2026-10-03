@@ -123,7 +123,6 @@ public class ChessGame
     {
         ChessPiece piece = targetBoard.getPiece(move.getStartPosition());
 
-
         if (move.getPromotionPiece() != null) 
         {
             piece = new ChessPiece (piece.getTeamColor(), move.getPromotionPiece());
