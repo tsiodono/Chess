@@ -1,5 +1,3 @@
 package model;
 
-public record CreateGameResult() {
-
-}
+public record CreateGameResult(int gameID) {}

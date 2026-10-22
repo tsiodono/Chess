@@ -1,5 +1,3 @@
 package model;
 
-public record RegisterRequest() {
-
-}
+public record RegisterRequest(String username, String password) {}
