@@ -1,3 +1,3 @@
 package model;
 
-public record JoinGameRequest(int gameID, String playerColor, String authToken) {}
+public record JoinGameRequest(Integer gameID, String playerColor, String authToken) {}
