@@ -3,7 +3,6 @@ package server;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
-import com.google.gson.Strictness;
 import io.javalin.http.Context;
 import model.ErrorResult;
 import service.ServiceException;
@@ -12,7 +11,6 @@ import service.ServiceException;
 final class JsonUtil {
     private final Gson gson = new GsonBuilder()
             .serializeNulls()
-            .setStrictness(Strictness.STRICT)
             .create();
 
     <T> T parse(Context ctx, Class<T> type) {
