@@ -391,13 +391,12 @@ public class ChessGame
 
     private boolean kingInCheck (ChessBoard testBoard, TeamColor teamcolor) {
         ChessPosition kingPosition = null;
-
         for (int row = 1;row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {
                 ChessPosition position = new ChessPosition(row, col);
                 ChessPiece piece = testBoard.getPiece(position);
-
-                if (piece != null && piece.getTeamColor() == teamcolor && piece.getPieceType() == ChessPiece.PieceType.KING) {
+                if (piece != null
+                        && piece.getTeamColor() == teamcolor && piece.getPieceType() == ChessPiece.PieceType.KING) {
                     kingPosition = position;
                 }
             }
@@ -409,8 +408,7 @@ public class ChessGame
             for (int col = 1; col <= 8; col++) {
                 ChessPosition position = new ChessPosition(row,col);
                 ChessPiece piece = testBoard.getPiece(position);
-
-                if (piece != null && piece.getTeamColor() != teamcolor) {
+                if (piece == null || piece.getTeamColor() == teamcolor) {
                     continue;
                 }
                 for (ChessMove move : piece.pieceMoves(testBoard, position)) {
