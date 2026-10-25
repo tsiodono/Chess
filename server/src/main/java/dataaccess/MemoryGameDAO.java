@@ -53,7 +53,7 @@ public final class MemoryGameDAO implements GameDAO {
             throw new AlreadyTakenException("Player seat already taken");
         }
         GameData updated = white ? old.withWhite(username) : old.withBlack(username);
-        games.put(id, updated);
+        update(updated);
         return updated;
     }
 
