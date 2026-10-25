@@ -310,12 +310,20 @@ public class ChessGame
     private void markRookMoved(TeamColor teamColor, ChessPosition position)
     {
         if (teamColor == TeamColor.WHITE && position.getRow() == 1) {
-            if (position.getColumn() == 1) whiteRookAMoved = true;
-            if (position.getColumn() == 8) whiteRookHMoved = true;
+            if (position.getColumn() == 1) {
+                whiteRookAMoved = true;
+            }
+            if (position.getColumn() == 8) {
+                whiteRookHMoved = true;
+            }
         }
         if (teamColor == TeamColor.BLACK && position.getRow() == 8) {
-            if (position.getColumn() == 1) blackRookAMoved = true;
-            if (position.getColumn() == 8) blackRookHMoved = true;
+            if (position.getColumn() == 1) {
+                blackRookAMoved = true;
+            }
+            if (position.getColumn() == 8) {
+                blackRookHMoved = true;
+            }
         }
     }
 
