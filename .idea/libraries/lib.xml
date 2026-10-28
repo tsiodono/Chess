@@ -2,6 +2,7 @@
   <library name="lib">
     <CLASSES>
       <root url="file://$PROJECT_DIR$/server/lib" />
+      <root url="jar://$PROJECT_DIR$/../mysql-connector-j-26.10.0/mysql-connector-j-26.10.0/mysql-connector-j-26.10.0.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
