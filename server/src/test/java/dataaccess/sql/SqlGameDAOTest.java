@@ -6,6 +6,11 @@ import chess.ChessPosition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import chess.ChessMove;
+import dataaccess.AlreadyTakenException;
+import dataaccess.NotFoundException;
+import model.GameData;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class SqlGameDAOTest {
@@ -62,5 +67,81 @@ class SqlGameDAOTest {
         games.clear();
 
         assertTrue(games.list().isEmpty());
+    }
+
+    @Test
+    void updatePersistsMoves() throws Exception {
+        var created = games.create("Practice game");
+        var game = created.game();
+
+        game.makeMove(new ChessMove(
+                new ChessPosition(2, 5),
+                new ChessPosition(4, 5),
+                null));
+
+        games.update(new GameData(
+                created.gameID(),
+                created.whiteUsername(),
+                created.blackUsername(),
+                created.gameName(),
+                game));
+
+        var loaded = new SqlGameDAO().find(created.gameID()).orElseThrow();
+
+        assertNull(loaded.game().getBoard().getPiece(new ChessPosition(2, 5)));
+
+        var e4 = loaded.game().getBoard().getPiece(new ChessPosition(4, 5));
+        assertNotNull(e4);
+        assertEquals(ChessPiece.PieceType.PAWN, e4.getPieceType());
+        assertEquals(ChessGame.TeamColor.BLACK, loaded.game().getTeamTurn());
+    }
+
+    @Test
+    void updateMissingGameThrowsNotFound() {
+        var game = new GameData(99999, null, null, "Missing", new ChessGame());
+
+        assertThrows(NotFoundException.class, () -> games.update(game));
+    }
+
+    @Test
+    void claimWhiteSeatPersists() throws Exception {
+        var created = games.create("Practice game");
+
+        var claimed = games.claimSeat(
+                created.gameID(), ChessGame.TeamColor.WHITE, "ana");
+
+        var loaded = new SqlGameDAO().find(created.gameID()).orElseThrow();
+
+        assertEquals("ana", claimed.whiteUsername());
+        assertEquals("ana", loaded.whiteUsername());
+    }
+
+    @Test
+    void claimBlackSeatPersists() throws Exception {
+        var created = games.create("Practice game");
+
+        var claimed = games.claimSeat(
+                created.gameID(), ChessGame.TeamColor.BLACK, "bob");
+
+        assertEquals("bob", claimed.blackUsername());
+        assertEquals(
+                "bob",
+                new SqlGameDAO().find(created.gameID()).orElseThrow().blackUsername());
+    }
+
+    @Test
+    void claimOccupiedOrMissingSeatThrows() throws Exception {
+        var created = games.create("Practice game");
+        games.claimSeat(created.gameID(), ChessGame.TeamColor.WHITE, "ana");
+
+        assertThrows(
+                AlreadyTakenException.class,
+                () -> games.claimSeat(
+                        created.gameID(), ChessGame.TeamColor.WHITE, "bob"));
+
+        assertThrows(
+                NotFoundException.class,
+                () -> games.claimSeat(
+                        99999, ChessGame.TeamColor.WHITE, "bob"));
     }
 }
