@@ -13,6 +13,7 @@ import model.RegisterRequest;
 import model.RegisterResult;
 import model.UserData;
 import java.util.UUID;
+import org.mindrot.jbcrypt.BCrypt;
 
 public final class UserService {
     private final UserDAO users;
@@ -28,7 +29,8 @@ public final class UserService {
             throw new ServiceException(400, "bad request");
         }
         try {
-            users.create(new UserData(request.username(), request.password(), request.email()));
+            String hashedPassword = BCrypt.hashpw(request.password(),BCrypt.gensalt());
+            users.create(new UserData(request.username(), hashedPassword, request.email()));
         } catch (AlreadyTakenException ex) {
             throw new ServiceException(403, "already taken");
         }
@@ -40,9 +42,8 @@ public final class UserService {
         if (request == null || blank(request.username()) || blank(request.password())) {
             throw new ServiceException(400, "bad request");
         }
-        UserData user = users.find(request.username())
-                .orElseThrow(() -> new ServiceException(401, "unauthorized"));
-        if (!user.password().equals(request.password())) {
+        UserData user = users.find(request.username()).orElseThrow(() -> new ServiceException(401, "unauthorized"));
+        if (!BCrypt.checkpw(request.password(), user.password())) {
             throw new ServiceException(401, "unauthorized");
         }
         return new LoginResult(user.username(), createAuth(user.username()));

@@ -13,6 +13,7 @@ import model.UserData;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import static service.ServiceAssertions.assertStatus;
+import org.mindrot.jbcrypt.BCrypt;
 
 class UserServiceTest {
     private final MemoryUserDAO users = new MemoryUserDAO();
@@ -24,15 +25,19 @@ class UserServiceTest {
         RegisterResult result = registerAna();
         assertEquals("ana", result.username());
         assertFalse(result.authToken().isBlank());
-        assertEquals(new UserData("ana", "pw", "ana@example.com"), users.find("ana").orElseThrow());
+
+        UserData savedUser = users.find("ana").orElseThrow();
+        assertNotEquals("pw", savedUser.password());
+        assertTrue(BCrypt.checkpw("pw", savedUser.password()));
+        assertEquals("ana@example.com", savedUser.email());
+
         assertEquals(new AuthData(result.authToken(), "ana"), auths.find(result.authToken()).orElseThrow());
     }
-
     @Test
     void registerRejectsDuplicateWithoutOverwritingUser() throws DataAccessException {
         RegisterResult original = registerAna();
         assertStatus(403, () -> service.register(new RegisterRequest("ana", "changed", "new@example.com")));
-        assertEquals("pw", users.find("ana").orElseThrow().password());
+        assertTrue(BCrypt.checkpw("pw", users.find("ana").orElseThrow().password()));
         assertTrue(auths.find(original.authToken()).isPresent());
     }
 
