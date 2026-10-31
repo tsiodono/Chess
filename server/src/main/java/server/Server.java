@@ -2,10 +2,12 @@ package server;
 
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
-import dataaccess.MemoryUserDAO;
 import dataaccess.UserDAO;
+import dataaccess.DataAccessException;
+import dataaccess.sql.DatabaseInitializer;
+import dataaccess.sql.SqlAuthDAO;
+import dataaccess.sql.SqlGameDAO;
+import dataaccess.sql.SqlUserDAO;
 import service.ClearService;
 import service.GameService;
 import service.ServiceException;
@@ -17,7 +19,14 @@ public class Server {
     private final Javalin javalin;
 
     public Server() {
-        this( new MemoryUserDAO(),new MemoryAuthDAO(), new MemoryGameDAO());
+        this(new SqlUserDAO(), new SqlAuthDAO(), new SqlGameDAO());
+
+        try {
+            DatabaseInitializer.initialize();
+        } catch (DataAccessException ex) {
+            throw new IllegalStateException(
+                    "Unable to initialize the database", ex);
+        }
     }
     Server(UserDAO users, AuthDAO auths, GameDAO games) {
         JsonUtil json = new JsonUtil();
