@@ -15,7 +15,7 @@ class DbInitializerTest {
         try (var connection = DatabaseManager.getConnection()) {
             var metadata = connection.getMetaData();
 
-            for (String table : new String[]{"users", "auths", "games"}) {
+            for (String table : new String[]{"user", "auths", "games"}) {
                 try (var results = metadata.getTables(
                         connection.getCatalog(),
                         null,

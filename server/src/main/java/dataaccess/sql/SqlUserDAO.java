@@ -15,7 +15,7 @@ public final class SqlUserDAO implements UserDAO {
     @Override
     public void create(UserData user) throws DataAccessException {
         String sql = """
-                INSERT INTO users (username, password_hash, email)
+                INSERT INTO user (username, password_hash, email)
                 VALUES (?, ?, ?)
                 """;
 
@@ -38,7 +38,7 @@ public final class SqlUserDAO implements UserDAO {
             throws DataAccessException {
         String sql = """
                 SELECT username, password_hash, email
-                FROM users
+                FROM user
                 WHERE username = ?
                 """;
 
@@ -65,13 +65,13 @@ public final class SqlUserDAO implements UserDAO {
 
     @Override
     public void clear() throws DataAccessException {
-        String sql = "DELETE FROM users";
+        String sql = "DELETE FROM user";
 
         try (var connection = DatabaseManager.getConnection();
              var statement = connection.prepareStatement(sql)) {
             statement.executeUpdate();
         } catch (SQLException ex) {
-            throw new DataAccessException("Unable to clear users", ex);
+            throw new DataAccessException("Unable to clear user", ex);
         }
     }
 }
