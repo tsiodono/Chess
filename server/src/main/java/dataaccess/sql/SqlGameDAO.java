@@ -66,16 +66,8 @@ public final class SqlGameDAO implements GameDAO {
                 WHERE game_id = ?
                 """;
 
-        try (var connection = DatabaseManager.getConnection();
-             var statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, gameID);
-
-            try (var results = statement.executeQuery()) {
-                if (!results.next()) {
-                    return Optional.empty();
-                }
-                return Optional.of(readGame(results));
-            }
+        try (var connection = DatabaseManager.getConnection()) {
+            return findGame(connection, gameID);
         } catch (SQLException ex) {
             throw new DataAccessException("Unable to find game", ex);
         }
