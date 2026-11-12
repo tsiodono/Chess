@@ -106,4 +106,24 @@ public class ServerFacadeTests {
         assertEquals("Your session is not valid. Please log in again.", error.getMessage());
     }
 
+    @Test
+    void createGameReturnsInternalIdForClientMapping() {
+        AuthData auth = facade.register("player1", "secret", "p1@example.com");
+        assertTrue(facade.createGame(auth.authToken(), "Friday match") > 0);
+    }
+
+    @Test
+    void createGameRejectsBlankName() {
+        AuthData auth = facade.register("player1", "secret", "p1@example.com");
+        ServerFacade.ApiException error = assertThrows(ServerFacade.ApiException.class,
+                () -> facade.createGame(auth.authToken(), " "));
+        assertEquals("That request could not be completed. Check the information and try again.",
+                error.getMessage());
+    }
+
+    @Test
+    void createGameRejectsMissingSession() {
+        assertThrows(ServerFacade.ApiException.class, () -> facade.createGame("", "Friday match"));
+    }
+
 }
