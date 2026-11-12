@@ -15,4 +15,11 @@ public class ServerFacade {
     public ServerFacade(int port) {
         this("localhost", port);
     }
+    public ServerFacade(String host, int port) {
+        if (host == null || host.isBlank() || port < 0 || port > 65535) {
+            throw new IllegalArgumentException("A valid server host and port are required.");
+        }
+        this.client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(3)).build();
+        this.baseUrl = "http://" + host + ":" + port;
+    }
 }
