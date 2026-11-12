@@ -126,4 +126,27 @@ public class ServerFacadeTests {
         assertThrows(ServerFacade.ApiException.class, () -> facade.createGame("", "Friday match"));
     }
 
+    @Test
+    void joinGameClaimsOpenSeat() {
+        AuthData auth = facade.register("player1", "secret", "p1@example.com");
+        int gameId = facade.createGame(auth.authToken(), "Friday match");
+        assertDoesNotThrow(() -> facade.joinGame(auth.authToken(), gameId, ChessGame.TeamColor.WHITE));
+        assertEquals("player1", facade.listGames(auth.authToken()).get(0).whiteUsername());
+    }
+
+    @Test
+    void joinGameRejectsTakenSeatAndInvalidColor() {
+        AuthData first = facade.register("player1", "secret", "p1@example.com");
+        AuthData second = facade.register("player2", "secret", "p2@example.com");
+        int gameId = facade.createGame(first.authToken(), "Friday match");
+        facade.joinGame(first.authToken(), gameId, ChessGame.TeamColor.WHITE);
+
+        assertThrows(ServerFacade.ApiException.class,
+                () -> facade.joinGame(second.authToken(), gameId, ChessGame.TeamColor.WHITE));
+        ServerFacade.ApiException invalidColor = assertThrows(ServerFacade.ApiException.class,
+                () -> facade.joinGame(second.authToken(), gameId, null));
+        assertEquals("That request could not be completed. Check the information and try again.",
+                invalidColor.getMessage());
+    }
+
 }
