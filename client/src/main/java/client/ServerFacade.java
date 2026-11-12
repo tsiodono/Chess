@@ -58,3 +58,25 @@ public class ServerFacade {
             throw ex;
         }
     }
+
+    public void logout(String authToken) {
+        send("DELETE", "/session", new LogoutRequest(authToken), authToken, Void.class);
+    }
+
+    public List<GameInfo> listGames(String authToken) {
+        ListGamesResult result = send("GET", "/game", null, authToken, ListGamesResult.class);
+        return result.games() == null ? List.of() : List.copyOf(result.games());
+    }
+
+    public int createGame(String authToken, String gameName) {
+        CreateGameResult result = send("POST", "/game", new CreateGameRequest(gameName, authToken),
+                authToken, CreateGameResult.class);
+        return result.gameID();
+    }
+
+    public void joinGame(String authToken, int gameId, ChessGame.TeamColor color) {
+        String requestedColor = color == null ? null : color.name();
+        send("PUT", "/game", new JoinGameRequest(gameId, requestedColor, authToken),
+                authToken, Void.class);
+    }
+
