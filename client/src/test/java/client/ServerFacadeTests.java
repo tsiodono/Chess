@@ -1,5 +1,17 @@
 package client;
 
+import chess.ChessGame;
+import model.AuthData;
+import model.GameInfo;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import server.Server;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.List;
 import org.junit.jupiter.api.*;
 import server.Server;
 
@@ -7,11 +19,13 @@ import server.Server;
 public class ServerFacadeTests {
 
     private static Server server;
+    private static ServerFacade facade;
 
     @BeforeAll
     public static void init() {
         server = new Server();
         var port = server.run(0);
+        facade = new ServerFacade(port);
         System.out.println("Started test HTTP server on " + port);
     }
 
@@ -24,6 +38,38 @@ public class ServerFacadeTests {
     @Test
     public void sampleTest() {
         Assertions.assertTrue(true);
+    }
+
+    @Test
+    void registerCreatesAndLogsInUser() {
+        AuthData auth = facade.register("player1", "secret", "p1@example.com");
+        assertEquals("player1", auth.username());
+        assertNotNull(auth.authToken());
+        assertFalse(auth.authToken().isBlank());
+    }
+
+    @Test
+    void registerRejectsDuplicateUsername() {
+        facade.register("player1", "secret", "p1@example.com");
+        ServerFacade.ApiException error = assertThrows(ServerFacade.ApiException.class,
+                () -> facade.register("player1", "other", "other@example.com"));
+        assertEquals("That name or player spot is already in use.", error.getMessage());
+    }
+
+    @Test
+    void loginAcceptsValidCredentials() {
+        facade.register("player1", "secret", "p1@example.com");
+        AuthData auth = facade.login("player1", "secret");
+        assertEquals("player1", auth.username());
+        assertFalse(auth.authToken().isBlank());
+    }
+
+    @Test
+    void loginRejectsInvalidCredentials() {
+        facade.register("player1", "secret", "p1@example.com");
+        ServerFacade.ApiException error = assertThrows(ServerFacade.ApiException.class,
+                () -> facade.login("player1", "wrong"));
+        assertEquals("Username or password is incorrect.", error.getMessage());
     }
 
 }

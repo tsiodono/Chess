@@ -2,6 +2,7 @@ package client;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
 import model.AuthData;
 import model.CreateGameRequest;
 import model.CreateGameResult;
@@ -39,21 +40,21 @@ public class ServerFacade {
     }
 }
 
-public AuthData register(String username, String password, String email) {
-    RegisterResult result = send("POST", "/user", new RegisterRequest(username, password, email),
-            null, RegisterResult.class);
-    return new AuthData(result.authToken(), result.username());
-}
-
-public AuthData login(String username, String password) {
-    try {
-        LoginResult result = send("POST", "/session", new LoginRequest(username, password),
-                null, LoginResult.class);
+    public AuthData register(String username, String password, String email) {
+        RegisterResult result = send("POST", "/user", new RegisterRequest(username, password, email),
+                null, RegisterResult.class);
         return new AuthData(result.authToken(), result.username());
-    } catch (ApiException ex) {
-        if (ex.getMessage().equals("Your session is not valid. Please log in again.")) {
-            throw new ApiException("Username or password is incorrect.");
-        }
-        throw ex;
     }
-}
+
+    public AuthData login(String username, String password) {
+        try {
+            LoginResult result = send("POST", "/session", new LoginRequest(username, password),
+                    null, LoginResult.class);
+            return new AuthData(result.authToken(), result.username());
+        } catch (ApiException ex) {
+            if (ex.getMessage().equals("Your session is not valid. Please log in again.")) {
+                throw new ApiException("Username or password is incorrect.");
+            }
+            throw ex;
+        }
+    }
