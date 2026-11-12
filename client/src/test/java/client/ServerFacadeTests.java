@@ -72,4 +72,18 @@ public class ServerFacadeTests {
         assertEquals("Username or password is incorrect.", error.getMessage());
     }
 
+    @Test
+    void logoutInvalidatesSession() {
+        AuthData auth = facade.register("player1", "secret", "p1@example.com");
+        assertDoesNotThrow(() -> facade.logout(auth.authToken()));
+        assertThrows(ServerFacade.ApiException.class, () -> facade.listGames(auth.authToken()));
+    }
+
+    @Test
+    void logoutRejectsUnknownToken() {
+        ServerFacade.ApiException error = assertThrows(ServerFacade.ApiException.class,
+                () -> facade.logout("not-a-token"));
+        assertEquals("Your session is not valid. Please log in again.", error.getMessage());
+    }
+
 }
