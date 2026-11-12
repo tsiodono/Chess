@@ -86,4 +86,24 @@ public class ServerFacadeTests {
         assertEquals("Your session is not valid. Please log in again.", error.getMessage());
     }
 
+    @Test
+    void listGamesReturnsGamesWithPlayers() {
+        AuthData auth = facade.register("player1", "secret", "p1@example.com");
+        int gameId = facade.createGame(auth.authToken(), "Friday match");
+        facade.joinGame(auth.authToken(), gameId, ChessGame.TeamColor.WHITE);
+
+        List<GameInfo> games = facade.listGames(auth.authToken());
+        assertEquals(1, games.size());
+        assertEquals(gameId, games.get(0).gameID());
+        assertEquals("Friday match", games.get(0).gameName());
+        assertEquals("player1", games.get(0).whiteUsername());
+    }
+
+    @Test
+    void listGamesRejectsMissingSession() {
+        ServerFacade.ApiException error = assertThrows(ServerFacade.ApiException.class,
+                () -> facade.listGames(""));
+        assertEquals("Your session is not valid. Please log in again.", error.getMessage());
+    }
+
 }
