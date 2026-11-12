@@ -149,4 +149,18 @@ public class ServerFacadeTests {
                 invalidColor.getMessage());
     }
 
+    @Test
+    void clearCanBeCalledRepeatedly() {
+        facade.register("player1", "secret", "p1@example.com");
+        assertDoesNotThrow(facade::clear);
+        assertDoesNotThrow(facade::clear);
+    }
+
+    @Test
+    void serverConnectionFailureBecomesUserSafeError() {
+        ServerFacade unavailable = new ServerFacade("localhost", 1);
+        ServerFacade.ApiException error = assertThrows(ServerFacade.ApiException.class, unavailable::clear);
+        assertEquals("Could not reach the Chess server. Make sure it is running and try again.", error.getMessage());
+    }
+
 }
