@@ -50,4 +50,27 @@ public final class ClientUI {
             }
         }
     }
+
+    private boolean handlePrelogin(String command) {
+        switch (command) {
+            case "login" -> login();
+            case "register" -> register();
+            case "" -> { }
+            default -> out.println("Unknown command. Type 'help' to see available commands.");
+        }
+        return true;
+    }
+
+    private boolean handlePostlogin(String command) {
+        switch (command) {
+            case "logout" -> logout();
+            case "create", "create game" -> createGame();
+            case "list", "list games" -> listGames();
+            case "play", "play game" -> playGame();
+            case "observe", "observe game" -> observeGame();
+            case "" -> { }
+            default -> out.println("Unknown command. Type 'help' to see available commands.");
+        }
+        return true;
+    }
 }
