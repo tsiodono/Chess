@@ -22,4 +22,32 @@ public final class ClientUI {
         this.input = input;
         this.out = out;
     }
+
+    public void run() {
+        out.println("Welcome to Chess. Type 'help' to see available commands.");
+        boolean running = true;
+        while (running) {
+            out.print(session == null ? "[signed out] > " : "[" + session.username() + "] > ");
+            String line = readLine();
+            if (line == null) {
+                out.println("Goodbye.");
+                break;
+            }
+            String command = line.trim().toLowerCase();
+            try {
+                if (command.equals("quit") || command.equals("exit")) {
+                    running = false;
+                    out.println("Goodbye.");
+                } else if (command.equals("help")) {
+                    showHelp();
+                } else if (session == null) {
+                    running = handlePrelogin(command);
+                } else {
+                    running = handlePostlogin(command);
+                }
+            } catch (ServerFacade.ApiException ex) {
+                out.println(ex.getMessage());
+            }
+        }
+    }
 }
