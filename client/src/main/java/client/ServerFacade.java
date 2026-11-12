@@ -80,3 +80,59 @@ public class ServerFacade {
                 authToken, Void.class);
     }
 
+    public void clear() {
+        send("DELETE", "/db", null, null, Void.class);
+    }
+
+    private <T> T send(String method, String path, Object body, String authToken, Class<T> responseType) {
+        HttpRequest.Builder request = HttpRequest.newBuilder(URI.create(baseUrl + path))
+                .timeout(Duration.ofSeconds(10))
+                .header("Accept", "application/json");
+        if (authToken != null) {
+            request.header("authorization", authToken);
+        }
+        if (body != null) {
+            request.header("Content-Type", "application/json")
+                    .method(method, HttpRequest.BodyPublishers.ofString(GSON.toJson(body)));
+        } else {
+            request.method(method, HttpRequest.BodyPublishers.noBody());
+        }
+
+        try {
+            HttpResponse<String> response = client.send(request.build(), HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() < 200 || response.statusCode() >= 300) {
+                throw apiError(response.statusCode());
+            }
+            if (responseType == Void.class) {
+                return null;
+            }
+            try {
+                return GSON.fromJson(response.body(), responseType);
+            } catch (JsonParseException | IllegalStateException ex) {
+                throw new ApiException("The server returned an unreadable response.");
+            }
+        } catch (IOException ex) {
+            throw new ApiException("Could not reach the Chess server. Make sure it is running and try again.");
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new ApiException("The request was interrupted. Please try again.");
+        }
+
+        private ApiException apiError(int statusCode) {
+            return switch (statusCode) {
+                case 400 -> new ApiException("That request could not be completed. Check the information and try again.");
+                case 401 -> new ApiException("Your session is not valid. Please log in again.");
+                case 403 -> new ApiException("That name or player spot is already in use.");
+                case 500 -> new ApiException("The Chess server encountered a problem. Please try again later.");
+                default -> new ApiException("The Chess server could not complete that request.");
+            };
+        }
+
+        /** User-safe error message for a failed server request. */
+        public static final class ApiException extends RuntimeException {
+            public ApiException(String message) {
+                super(message);
+            }
+        }
+}
+
