@@ -38,7 +38,6 @@ public class ServerFacade {
         this.client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(3)).build();
         this.baseUrl = "http://" + host + ":" + port;
     }
-}
 
     public AuthData register(String username, String password, String email) {
         RegisterResult result = send("POST", "/user", new RegisterRequest(username, password, email),
