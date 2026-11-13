@@ -76,7 +76,9 @@ public final class ClientUI {
     private void login() {
         String username = prompt("Username: ");
         String password = prompt("Password: ");
-        if (username == null || password == null) return;
+        if (username == null || password == null) {
+            return;
+        }
         session = server.login(username, password);
         games = List.of();
         out.println("Welcome back, " + session.username() + ".");
@@ -86,7 +88,9 @@ public final class ClientUI {
         String username = prompt("Username: ");
         String password = prompt("Password: ");
         String email = prompt("Email: ");
-        if (username == null || password == null || email == null) return;
+        if (username == null || password == null || email == null) {
+            return;
+        }
         session = server.register(username, password, email);
         games = List.of();
         out.println("Account created. Welcome, " + session.username() + ".");
@@ -101,7 +105,9 @@ public final class ClientUI {
 
     private void createGame() {
         String name = prompt("Game name: ");
-        if (name == null) return;
+        if (name == null) {
+            return;
+        }
         server.createGame(session.authToken(), name);
         games = List.of();
         out.println("Game created. Use 'list' to see it and choose a side.");
@@ -123,9 +129,13 @@ public final class ClientUI {
 
     private void playGame() {
         GameInfo game = chooseGame();
-        if (game == null) return;
+        if (game == null) {
+            return;
+        }
         String colorInput = prompt("Choose a color (white or black): ");
-        if (colorInput == null) return;
+        if (colorInput == null) {
+            return;
+        }
         ChessGame.TeamColor color = parseColor(colorInput);
         if (color == null) {
             out.println("Please enter 'white' or 'black'.");
@@ -139,17 +149,25 @@ public final class ClientUI {
 
     private void observeGame() {
         GameInfo game = chooseGame();
-        if (game == null) return;
+        if (game == null) {
+            return;
+        }
         out.println("Observing " + game.gameName() + " from White's perspective.");
         BoardPrinter.drawInitialBoard(ChessGame.TeamColor.WHITE, out);
         out.println("Live observation will be available in a later phase.");
     }
 
     private GameInfo chooseGame() {
-        if (games.isEmpty()) listGames();
-        if (games.isEmpty()) return null;
+        if (games.isEmpty()) {
+            listGames();
+        }
+        if (games.isEmpty()) {
+            return null;
+        }
         String selection = prompt("Game number: ");
-        if (selection == null) return null;
+        if (selection == null) {
+            return null;
+        }
         try {
             int number = Integer.parseInt(selection.trim());
             if (number < 1 || number > games.size()) {
