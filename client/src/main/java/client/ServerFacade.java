@@ -116,6 +116,7 @@ public class ServerFacade {
             Thread.currentThread().interrupt();
             throw new ApiException("The request was interrupted. Please try again.");
         }
+    }
 
         private ApiException apiError(int statusCode) {
             return switch (statusCode) {
