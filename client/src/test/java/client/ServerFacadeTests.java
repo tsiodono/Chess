@@ -185,4 +185,11 @@ public class ServerFacadeTests {
                 () -> facade.register("player1", "secret", ""));
     }
 
+    @Test
+    void listGamesReturnsEmptyListWhenNoGamesExist() {
+        AuthData auth = facade.register("player1", "secret", "p1@example.com");
+
+        assertTrue(facade.listGames(auth.authToken()).isEmpty());
+    }
+
 }
