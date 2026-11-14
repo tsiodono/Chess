@@ -29,6 +29,11 @@ public class ServerFacadeTests {
         System.out.println("Started test HTTP server on " + port);
     }
 
+    @BeforeEach
+    void clearDatabase() {
+        facade.clear();
+    }
+
     @AfterAll
     static void stopServer() {
         server.stop();
