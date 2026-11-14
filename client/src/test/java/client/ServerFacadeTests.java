@@ -192,4 +192,12 @@ public class ServerFacadeTests {
         assertTrue(facade.listGames(auth.authToken()).isEmpty());
     }
 
+    @Test
+    void joinGameRejectsUnknownGameId() {
+        AuthData auth = facade.register("player1", "secret", "p1@example.com");
+
+        assertThrows(ServerFacade.ApiException.class,
+                () -> facade.joinGame(auth.authToken(), 999999, ChessGame.TeamColor.WHITE));
+    }
+
 }
