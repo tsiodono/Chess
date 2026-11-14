@@ -168,4 +168,21 @@ public class ServerFacadeTests {
         assertEquals("Could not reach the Chess server. Make sure it is running and try again.", error.getMessage());
     }
 
+    @Test
+    void constructorRejectsInvalidAddress() {
+        assertThrows(IllegalArgumentException.class, () -> new ServerFacade(-1));
+        assertThrows(IllegalArgumentException.class, () -> new ServerFacade("", 8080));
+        assertThrows(IllegalArgumentException.class, () -> new ServerFacade("localhost", 70000));
+    }
+
+    @Test
+    void registerRejectsBlankFields() {
+        assertThrows(ServerFacade.ApiException.class,
+                () -> facade.register("", "secret", "p1@example.com"));
+        assertThrows(ServerFacade.ApiException.class,
+                () -> facade.register("player1", "", "p1@example.com"));
+        assertThrows(ServerFacade.ApiException.class,
+                () -> facade.register("player1", "secret", ""));
+    }
+
 }
